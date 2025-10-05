@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人作品集</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+            background: #faf7f2;
+        }
+        .profile-header {
+            position: relative;
+            background: none;
+            padding: 32px 0 16px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .profile-header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, #faf7f2 100%), url('/mysitesource/背景.png') center/cover no-repeat;
+            opacity: 0.7;
+        }
+        .profile-header > * {
+            position: relative;
+            z-index: 1;
+        }
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffffff;
+        }
+        .nickname {
+            margin-top: 16px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #222;
+        }
+        .bio {
+            margin-top: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+        .stats {
+            display: flex;
+            gap: 32px;
+            margin: 16px 0 0 0;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #222;
+        }
+        .stat-label {
+            color: #ffffff;
+            font-size: 0.95rem;
+        }
+        .works-section {
+            max-width: 900px;
+            margin: 24px auto 0 auto;
+            padding: 0 12px;
+        }
+        .works-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #222;
+        }
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        @media (min-width: 700px) {
+            .works-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .work-card {
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        .work-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .work-img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+        .play-icon {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .play-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: #fff;
+        }
+        .video-modal {
+            display: none;
+            position: fixed;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-modal.active {
+            display: flex;
+        }
+        .video-modal-content {
+            max-width: 96vw;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            border-radius: 10px;
+            position: relative;
+            box-sizing: border-box;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+        }
+        .video-modal video {
+            max-width: 90vw;
+            max-height: 70vh;
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #000;
+            border-radius: 10px;
+        }
+        .video-modal-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: #fff;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .work-info {
+            padding: 10px 10px 8px 10px;
+        }
+        .work-title {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 4px;
+        }
+        .work-desc {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        /* 人形小组件样式 */
+        .side-widgets {
+            position: fixed;
+            top: 35vh;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .side-widgets.left {
+            left: 18px;
+        }
+        .side-widgets.right {
+            right: 18px;
+        }
+        .side-widget {
+            width: 60px;
+            height: 120px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .side-widget img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+        }
+        .side-tooltip {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            margin-left: 8px;
+        }
+        .side-widgets.right .side-widget .side-tooltip {
+            left: auto;
+            right: 100%;
+            margin-left: 0;
+            margin-right: 8px;
+        }
+        .side-widget:hover .side-tooltip {
+            opacity: 1;
+        }
+        .category-title {
+            font-size: 1.08rem;
+            font-weight: 600;
+            color: #afdbff;
+            margin: 28px 0 6px 2px;
+        }
+        .category-divider {
+            border: none;
+            border-top: 2px solid #cecece;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧人形小组件组 -->
+    <div class="side-widgets left">
+        <div class="side-widget">
+            <img src="/mysitesource/封面/组件1.png" alt="左侧人形">
+            <span class="side-tooltip">徐胜利</span>
+        </div>
+        <div class="side-widget">
+            <img src="/mysitesource/封面/组件3.png" alt="左侧人形">
+            <span class="side-tooltip">白马王子</span>
+        </div>
+    </div>
+    <!-- 右侧人形小组件组 -->
+    <div class="side-widgets right">
+        <div class="side-widget">
+            <img src="/mysitesource/封面/组件2.png" alt="右侧人形">
+            <span class="side-tooltip">徐胜利</span>
+        </div>
+        <div class="side-widget">
+            <img src="/mysitesource/封面/组件4.png" alt="右侧人形">
+            <span class="side-tooltip">白宇</span>
+        </div>
+        <!-- 可继续添加更多右侧组件 -->
+    </div>
+    <div class="profile-header">
+        <img class="avatar" src="/mysitesource/头像.jpg" alt="头像">
+        <div class="nickname">GERUIPU</div>
+        <div class="bio">剪点喜欢的 欢迎您来</div>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-num">4567</div>
+                <div class="stat-label">粉丝</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">12.7万</div>
+                <div class="stat-label">获赞与收藏</div>
+            </div>
+        </div>
+    </div>
+    <div class="works-section">
+        <div class="works-title">我的作品</div>
+        <!-- 分类1：內娱 -->
+        <div class="category-title">內娱</div>
+        <hr class="category-divider">
+        <div class="works-grid">
+            <div class="work-card" data-video="/mysitesource/白宇蛇.mp4">
+                <img class="work-img" src="/mysitesource/封面/蛇.jpg" alt="作品1">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">我，就是SHE父</div>
+                    <div class="work-desc">第十期男鬼袭来</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/白宇仿剪.mp4">
+                <img class="work-img" src="/mysitesource/封面/白宇仿剪.jpg" alt="作品2">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">雨还在下</div>
+                    <div class="work-desc"></div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/体制内福利.mp4">
+                <img class="work-img" src="/mysitesource/封面/体制内福利.jpg" alt="作品2">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">体制内福利🔥</div>
+                    <div class="work-desc">乔一成 记者 ＆ 林强 行长</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/白宇兰蔻.mp4">
+                <img class="work-img" src="/mysitesource/封面/兰蔻.jpg" alt="作品2">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">WHITE鲜花饼</div>
+                    <div class="work-desc">兰蔻直播场</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/负负得正.mp4">
+                <img class="work-img" src="/mysitesource/封面/负负得正.png" alt="作品2">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">负负得正</div>
+                    <div class="work-desc">人怎么才能，孤独地活着但又不孤单</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/昌东.mp4">
+                <img class="work-img" src="/mysitesource/封面/昌东.png" alt="作品2">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">昌东配硬曲</div>
+                    <div class="work-desc"></div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/郑西决哭.mp4">
+                <img class="work-img" src="/mysitesource/封面/郑西决哭.jpg" alt="作品2">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">💧</div>
+                    <div class="work-desc"></div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/落雨声滴答滴滴.mp4">
+                <img class="work-img" src="/mysitesource/封面/落雨声.png" alt="作品2">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">李承泽这个爽</div>
+                    <div class="work-desc"></div>
+                </div>
+            </div>
+        </div>
+        <!-- 分类2：韩娱 -->
+        <div class="category-title">韩娱</div>
+        <hr class="category-divider">
+        <div class="works-grid">
+            <div class="work-card" data-video="/mysitesource/黄礼志.mp4">
+                <img class="work-img" src="/mysitesource/封面/黄礼志.png" alt="作品3">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">TOXIC</div>
+                    <div class="work-desc">黄礼志</div>
+                </div>
+            </div>
+        </div>
+        <!-- 分类3：欧美 -->
+        <div class="category-title">欧美</div>
+        <hr class="category-divider">
+        <div class="works-grid">
+            <div class="work-card" data-video="/mysitesource/loki.mp4">
+                <img class="work-img" src="/mysitesource/封面/loki.png" alt="作品5">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">·Loki·时间之神</div>
+                    <div class="work-desc">For all of us,for you.</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/豺狼的日子.mp4">
+                <img class="work-img" src="/mysitesource/封面/豺狼的日子.png" alt="作品6">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">是杀手是尤物</div>
+                    <div class="work-desc">豺狼的日子</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/汉尼拔.mp4">
+                <img class="work-img" src="/mysitesource/封面/威尔.png" alt="作品6">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">共情者的诅咒</div>
+                    <div class="work-desc">汉尼拔</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/麦休.mp4">
+                <img class="work-img" src="/mysitesource/封面/麦休.png" alt="作品6">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">麦休</div>
+                    <div class="work-desc"></div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/ggad.mp4">
+                <img class="work-img" src="/mysitesource/封面/ggad.png" alt="作品6">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">极品基老伴</div>
+                    <div class="work-desc">GGAD</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/康纳.mp4">
+                <img class="work-img" src="/mysitesource/封面/康纳.png" alt="作品6">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">安卓小狗RK800</div>
+                    <div class="work-desc">底特律变人</div>
+                </div>
+            </div>
+            <div class="work-card" data-video="/mysitesource/夏洛克.mp4">
+                <img class="work-img" src="/mysitesource/封面/夏洛克.png" alt="作品6">
+                <span class="play-icon">
+                    <svg viewBox="0 0 48 48"><polygon points="16,12 40,24 16,36"/></svg>
+                </span>
+                <div class="work-info">
+                    <div class="work-title">小夏小夏可以舔你的脑子吗</div>
+                    <div class="work-desc">神探夏洛克</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频弹窗 -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-modal-content">
+            <button class="video-modal-close" id="videoModalClose">×</button>
+            <video id="modalVideo" controls preload="metadata"></video>
+        </div>
+    </div>
+
+    <script>
+        // 视频弹窗逻辑
+        const modal = document.getElementById('videoModal');
+        const modalVideo = document.getElementById('modalVideo');
+        const modalClose = document.getElementById('videoModalClose');
+        
+        document.querySelectorAll('.work-card[data-video]').forEach(card => {
+            card.addEventListener('click', function() {
+                const videoSrc = this.getAttribute('data-video');
+                modalVideo.src = videoSrc;
+                modal.classList.add('active');
+                modalVideo.play();
+            });
+        });
+        
+        modalClose.addEventListener('click', function() {
+            modal.classList.remove('active');
+            modalVideo.pause();
+            modalVideo.currentTime = 0;
+            modalVideo.src = '';
+        });
+        
+        modal.addEventListener('click', function(e) {
+            if(e.target === modal) {
+                modal.classList.remove('active');
+                modalVideo.pause();
+                modalVideo.currentTime = 0;
+                modalVideo.src = '';
+            }
+        });
+    </script>
+</body>
+</html>

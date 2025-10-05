@@ -1,0 +1,19 @@
+{
+  "name": "personal-portfolio-site",
+  "version": "1.0.0",
+  "description": "个人作品集网站 - 静态HTML网站",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "portfolio",
+    "static-site",
+    "vercel"
+  ],
+  "author": "GERUIPU",
+  "license": "MIT",
+  "devDependencies": {}
+}
+
